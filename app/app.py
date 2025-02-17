@@ -16,7 +16,6 @@ logging.getLogger(
 def load_model():
     model_path = "YOLOv8m.pt"
     model = YOLO(model_path)
-    model.to("cpu")
     return model
 
 
