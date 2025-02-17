@@ -1,26 +1,21 @@
-FROM python:3.10-slim
+# Use the official Python image with version 3.10
+FROM python:3.10
 
-# Set working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies for OpenCV and libgomp
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
+# Copy the application files to the container
+COPY . .
 
-# Copy application files
-COPY requirements.txt .
-COPY YOLOv8m.pt .
-COPY app.py .
+# Install system dependencies
+RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies with upgraded pip
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir streamlit torch torchvision torchaudio numpy opencv-python pillow ultralytics
 
-# Expose Streamlit port
+# Expose the default Streamlit port
 EXPOSE 8501
 
-# Run the application
+# Command to run the Streamlit app
 CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
